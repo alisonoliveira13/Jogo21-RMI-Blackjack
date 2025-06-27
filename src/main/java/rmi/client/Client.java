@@ -1,6 +1,6 @@
 package rmi.client;
 
-import rmi.interfaces.rmiGame;
+import rmi.interfaces.Session;
 import rmi.models.GameState;
 
 import java.rmi.registry.LocateRegistry;
@@ -16,7 +16,7 @@ public class Client {
 
             // 2. Busca (lookup) pelo serviço remoto no registry usando o nome "Jogo21".
             // O resultado é um "stub", um proxy que representa o objeto remoto.
-            rmiGame gameService = (rmiGame) registry.lookup("Jogo21");
+            Session gameService = (Session) registry.lookup("Jogo21");
 
             // --- Interface de Usuário no Console ---
             Scanner scanner = new Scanner(System.in);

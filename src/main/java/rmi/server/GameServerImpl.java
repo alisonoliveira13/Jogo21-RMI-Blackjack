@@ -1,6 +1,6 @@
 package rmi.server;
 
-import rmi.interfaces.rmiGame;
+import rmi.interfaces.Session;
 import rmi.models.Card;
 import rmi.models.GameState;
 
@@ -18,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
  * Estende UnicastRemoteObject para se tornar um objeto de serviço RMI.
  */
 
-public class GameServerImpl extends UnicastRemoteObject implements rmiGame {
+public class GameServerImpl extends UnicastRemoteObject implements Session {
 
     private final Map<String, GameState> activeGames = new ConcurrentHashMap<>();
     private List<Card> deck;
