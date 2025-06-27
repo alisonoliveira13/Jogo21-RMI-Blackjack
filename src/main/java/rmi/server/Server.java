@@ -1,14 +1,14 @@
-package rmi.servidor;
+package rmi.server;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
-public class Servidor {
+public class Server {
 
     public static void main(String[] args) {
         try {
             // 1. Cria a instância do serviço remoto (a implementação do jogo)
-            ServidorJogoImpl jogoServico = new ServidorJogoImpl();
+            GameServerImpl jogoServico = new GameServerImpl();
 
             // 2. Cria o registro RMI na porta padrão (1099)
             Registry registry = LocateRegistry.createRegistry(1099);

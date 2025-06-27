@@ -1,14 +1,13 @@
-package rmi.cliente;
+package rmi.client;
 
-import rmi.interfaces.JogoRMI;
-import rmi.models.Carta;
-import rmi.models.EstadoJogo;
+import rmi.interfaces.rmiGame;
+import rmi.models.GameState;
 
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.util.Scanner;
 
-public class Cliente {
+public class Client {
 
     public static void main(String[] args) {
         try {
@@ -17,18 +16,18 @@ public class Cliente {
 
             // 2. Busca (lookup) pelo serviço remoto no registry usando o nome "Jogo21".
             // O resultado é um "stub", um proxy que representa o objeto remoto.
-            JogoRMI jogoServico = (JogoRMI) registry.lookup("Jogo21");
+            rmiGame gameService = (rmiGame) registry.lookup("Jogo21");
 
             // --- Interface de Usuário no Console ---
             Scanner scanner = new Scanner(System.in);
-            String nomeJogador = "";
-            EstadoJogo estadoAtual = null;
+            String playerName = "";
+            GameState currentState = null;
 
             System.out.println("Bem-vindo ao cliente do Jogo 21!");
             System.out.print("Digite seu nome para se conectar: ");
-            nomeJogador = scanner.nextLine();
-            String respostaConexao = jogoServico.conectar(nomeJogador);
-            System.out.println("[SERVIDOR] " + respostaConexao);
+            playerName = scanner.nextLine();
+            String connectionResponse = gameService.connect(playerName);
+            System.out.println("[SERVIDOR] " + connectionResponse);
 
 
             while (true) {
@@ -38,29 +37,29 @@ public class Cliente {
                 System.out.println("3. Parar (Stand)");
                 System.out.println("4. Sair");
                 System.out.print("Escolha uma opção: ");
-                String opcao = scanner.nextLine();
+                String option = scanner.nextLine();
 
-                switch (opcao) {
+                switch (option) {
                     case "1":
                         // Invoca o método remoto no servidor.
-                        estadoAtual = jogoServico.iniciarRodada(nomeJogador);
-                        imprimirEstado(estadoAtual);
+                        currentState = gameService.startRound(playerName);
+                        printState(currentState);
                         break;
                     case "2":
-                        if (estadoAtual == null || estadoAtual.isJogoEncerrado()) {
+                        if (currentState == null || currentState.isGameEnded()) {
                             System.out.println("Você precisa iniciar uma rodada primeiro ou a rodada atual já acabou.");
                             continue;
                         }
-                        estadoAtual = jogoServico.pedirCarta(nomeJogador);
-                        imprimirEstado(estadoAtual);
+                        currentState = gameService.hit(playerName);
+                        printState(currentState);
                         break;
                     case "3":
-                        if (estadoAtual == null || estadoAtual.isJogoEncerrado()) {
+                        if (currentState == null || currentState.isGameEnded()) {
                             System.out.println("Você precisa iniciar uma rodada primeiro ou a rodada atual já acabou.");
                             continue;
                         }
-                        estadoAtual = jogoServico.parar(nomeJogador);
-                        imprimirEstado(estadoAtual);
+                        currentState = gameService.stand(playerName);
+                        printState(currentState);
                         break;
                     case "4":
                         System.out.println("Obrigado por jogar! Saindo...");
@@ -79,19 +78,19 @@ public class Cliente {
     }
 
 
-    private static void imprimirEstado(EstadoJogo estado) {
-        if (estado == null) {
+    private static void printState(GameState state) {
+        if (state == null) {
             System.out.println("Estado do jogo é nulo.");
             return;
         }
 
         System.out.println("\n---------------------------------");
-        System.out.println(">> Mão do Jogador: " + estado.getMaoJogador());
-        System.out.println(">> Pontuação do Jogador: " + estado.getPontuacaoJogador());
+        System.out.println(">> Mão do Jogador: " + state.getPlayerHand());
+        System.out.println(">> Pontuação do Jogador: " + state.getPlayerScore());
         System.out.println("---------------------------------");
-        System.out.println(">> Mão Visível do Dealer: " + estado.getMaoVisivelDealer());
+        System.out.println(">> Mão Visível do Dealer: " + state.getDealerHand());
         System.out.println("---------------------------------");
-        System.out.println("## MENSAGEM: " + estado.getMensagem() + " ##");
+        System.out.println("## MENSAGEM: " + state.getMessage() + " ##");
         System.out.println("---------------------------------");
     }
 }
