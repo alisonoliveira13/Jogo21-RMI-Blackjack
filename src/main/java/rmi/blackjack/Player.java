@@ -1,9 +1,10 @@
 package rmi.blackjack;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public abstract class Player {
+public abstract class Player implements Serializable {
     private final ArrayList<Card> hand = new ArrayList<>();
 
     public Player(){
@@ -33,11 +34,15 @@ public abstract class Player {
         int score = 0;
         int aceCount = 0;
         for (Card card : this.hand){
+            if (!card.isFlipped()){
+                continue;
+            }
             if (card.getRank() >= 10){
                 score += 10;
                 continue;
             }
             if (card.getRank() == 1) {
+                score += 11;
                 aceCount += 1;
                 continue;
             }
@@ -49,5 +54,9 @@ public abstract class Player {
             aceCount--;
         }
         return score;
+    }
+
+    public boolean lost(){
+        return getScore() > 21;
     }
 }

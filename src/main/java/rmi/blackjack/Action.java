@@ -1,6 +1,8 @@
 package rmi.blackjack;
 
-public enum Action {
+import java.io.Serializable;
+
+public enum Action implements Serializable {
     HIT("Pedir Carta (Hit)"),
     STAND("Parar (Stand)"),
     DOUBLE_DOWN("Dobrar aposta (Double down)"),

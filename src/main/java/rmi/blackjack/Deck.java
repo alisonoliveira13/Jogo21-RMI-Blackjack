@@ -1,11 +1,12 @@
 package rmi.blackjack;
 
+import java.io.Serializable;
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Stack;
 
-public class Deck {
+public class Deck implements Serializable {
     private final Stack<Card> cards = new Stack<>();
 
     public Deck() {
