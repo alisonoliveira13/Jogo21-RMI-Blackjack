@@ -77,7 +77,11 @@ public class SessionImpl implements Session, Serializable {
         this.bettor.setBalance(this.bettor.getBalance() + value);
     }
 
-    public void withdraw(int value){
+    public boolean withdraw(int value){
+        if (value <= 0 || value > this.bettor.getBalance()) {
+            return false;
+        }
         this.bettor.setBalance(this.bettor.getBalance() - value);
+        return true;
     }
 }

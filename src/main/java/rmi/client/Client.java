@@ -119,6 +119,7 @@ public class Client {
         System.out.println("[SERVIDOR] Digite o valor a ser sacado: ");
         int value = scanner.nextInt();
         scanner.nextLine();
+
         if (value < 0){
             System.out.println("[SERVIDOR] Valor inválido! O mínimo é R$1,00. Cancelando operação...");
             return;
@@ -129,8 +130,14 @@ public class Client {
             System.out.println("[SERVIDOR] CPF inválido! Cancelando operação...");
             return;
         }
-        this.session.withdraw(value);
-        System.out.println("[SERVIDOR] R$" + value + " sacados com sucesso");
+
+        boolean success = this.session.withdraw(value);
+
+        if (success) {
+            System.out.println("[SERVIDOR] R$" + value + " sacados com sucesso");
+        } else {
+            System.out.println("[SERVIDOR] Saldo insuficiente! Saldo atual: R$" + this.session.getBettorBalance());
+        }
     }
 
     public void startRound() throws RemoteException {
