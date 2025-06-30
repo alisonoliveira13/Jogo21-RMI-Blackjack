@@ -57,7 +57,7 @@ public class SessionImpl implements Session {
     }
 
     public String getResultLastRound(){
-        return this.history.getRoundHistory().getLast().getResultString();
+        return this.history.getRoundHistory().getFirst().getResultString();
     }
 
     public int getBettorBalance() {

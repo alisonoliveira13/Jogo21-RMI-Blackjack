@@ -89,7 +89,7 @@ public class Round implements Serializable {
                         break;
                     }
 
-                    if (this.bettor.getHand().getFirst() != this.bettor.getHand().getLast()){
+                    if (this.bettor.getHand().getFirst().getRank() != this.bettor.getHand().getLast().getRank()){
                         break;
                     }
                     actionList.add(action);
@@ -121,7 +121,7 @@ public class Round implements Serializable {
     }
 
     public void calculateWinner(){
-        if (this.bettor.getScore() > this.dealer.getScore() || this.dealer.lost()){
+        if ((this.bettor.getScore() > this.dealer.getScore() || this.dealer.lost()) && !this.bettor.lost()){
             this.result = true;
             return;
         }
@@ -133,8 +133,7 @@ public class Round implements Serializable {
     /* O jogador pode dobrar a aposta, mas recebe apenas mais uma carta*/
     public void doubleDown(){
         this.bettor.drawCard(this.deck);
-        this.bettor.setBalance(this.bettor.getBalance() - this.betAmount);
-        this.betAmount += this.betAmount;
+        this.betAmount *= 2;
 
         if (this.bettor.lost()){
             this.result = false;
