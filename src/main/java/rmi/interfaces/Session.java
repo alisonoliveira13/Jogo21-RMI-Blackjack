@@ -20,6 +20,6 @@ public interface Session extends Remote {
     String getResultLastRound() throws RemoteException;
     String getHistory() throws RemoteException;
     int getBettorBalance() throws RemoteException;
-    void withdraw(int value) throws RemoteException;
+    boolean withdraw(int value) throws RemoteException;
     void deposit(int value) throws RemoteException;
 }
