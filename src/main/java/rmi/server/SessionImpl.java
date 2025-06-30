@@ -22,6 +22,7 @@ public class SessionImpl implements Session {
 
     @Override
     public void startNewRound(int betAmount){
+        this.bettor.setBalance(this.bettor.getBalance() - betAmount);
         Round round = new Round(dealer, bettor, deck, betAmount);
         this.history.add(round);
         this.currentRound = round;
@@ -47,10 +48,8 @@ public class SessionImpl implements Session {
     public void executeAction(int actionChoice){
         this.currentRound.executeAction(actionChoice - 1);
         if (this.currentRound.getResult() != null){
-            if (this.currentRound.getResult() == true) {
-                this.bettor.setBalance(this.bettor.getBalance() + this.currentRound.getBetAmount());
-            } else if (this.currentRound.getResult() == false){
-                this.bettor.setBalance(this.bettor.getBalance() - this.currentRound.getBetAmount());
+            if (this.currentRound.getResult()) {
+                this.bettor.setBalance(this.bettor.getBalance() + this.currentRound.getBetAmount() * 2);
             }
             this.currentRound = null;
         }
@@ -66,5 +65,13 @@ public class SessionImpl implements Session {
 
     public String getHistory(){
         return this.history.getHistoryString();
+    }
+
+    public void deposit(int value) {
+        this.bettor.setBalance(this.bettor.getBalance() + value);
+    }
+
+    public void withdraw(int value){
+        this.bettor.setBalance(this.bettor.getBalance() - value);
     }
 }

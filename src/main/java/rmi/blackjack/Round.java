@@ -6,7 +6,7 @@ import java.util.ArrayList;
 public class Round implements Serializable {
     private final Dealer dealer;
     private final Bettor bettor;
-    private final Deck deck;
+    private Deck deck;
     private final ArrayList<Action> actionList = new ArrayList<>();
     private int betAmount;
     private Boolean result = null;
@@ -21,16 +21,18 @@ public class Round implements Serializable {
     public void start(){
         this.bettor.dropCards(this.deck);
         this.dealer.dropCards(this.deck);
-        this.deck.shuffle();
 
+        if (this.deck.getDeckSize() != 52){
+            this.deck = new Deck();
+        }
+
+        this.deck.shuffle();
         this.bettor.drawCards(this.deck, 2);
         this.dealer.drawCards(this.deck, 2);
         this.dealer.getHand().getLast().setFlipped(false);
     }
 
-    //TODO melhorar lógica apostas
     //TODO implementar interface gráfica
-    //TODO implementar double down, stand, insurance
     public Boolean getResult() {
         return result;
     }
@@ -45,8 +47,6 @@ public class Round implements Serializable {
             case HIT -> this.hit();
             case STAND -> this.stand();
             case DOUBLE_DOWN -> this.doubleDown();
-            case SPLIT -> this.split();
-            case INSURANCE -> this.insurance();
         }
     }
 
@@ -70,7 +70,9 @@ public class Round implements Serializable {
 
     /* Implementação de funcionalidades extras não especificadas no trabalho.
     * No jogo de blackjack, além de Hit e Stand, também há Double Down, Split e Insurance.
-    * Foi realizado as implementações a seguir.*/
+    * A ideia inicial era implementar double down, split e insurance, porém, split e insurance teriam que mexer
+    * na forma em que foi construído a aplicação (mais de uma aposta por jogador). Por falta de tempo hábil,
+    * implementamos apenas o double down.*/
     public void getAvailableActions(){
         actionList.clear();
 
@@ -80,26 +82,6 @@ public class Round implements Serializable {
                 case STAND -> actionList.add(action);
                 case DOUBLE_DOWN -> {
                     if (this.bettor.getHand().size() != 2 || this.bettor.getBalance() < this.betAmount){
-                        break;
-                    }
-                    actionList.add(action);
-                }
-                case SPLIT -> {
-                    if (this.bettor.getHand().size() != 2){
-                        break;
-                    }
-
-                    if (this.bettor.getHand().getFirst().getRank() != this.bettor.getHand().getLast().getRank()){
-                        break;
-                    }
-                    actionList.add(action);
-                }
-
-                case INSURANCE -> {
-                    if (this.bettor.getHand().size() != 2){
-                        break;
-                    }
-                    if (this.dealer.getFlippedCard().getRank() != 1){
                         break;
                     }
                     actionList.add(action);
@@ -140,19 +122,6 @@ public class Round implements Serializable {
             return;
         }
         this.stand();
-    }
-
-    /* Se o jogador tem um par, pode dividir cada carta para uma mão diferente */
-    public void split(){
-
-    }
-
-    /* Se o dealer tem um Ás como carta visível, o jogador pode fazer um seguro.
-    Se o dealer tiver blackjack, o seguro é pago em 2:1.
-    Ou seja, jogador aposta seguro, se ganhar recebe o que apostou de volta e mais 2x o que apostou.
-     */
-    public void insurance(){
-        System.out.println("Escolha o valor da aposta de seguro: ");
     }
 
     public String getGameStateString() {

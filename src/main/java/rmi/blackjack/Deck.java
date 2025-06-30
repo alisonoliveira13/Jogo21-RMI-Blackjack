@@ -30,5 +30,7 @@ public class Deck implements Serializable {
         Collections.shuffle(cards);
     }
 
-
+    public int getDeckSize(){
+        return this.cards.size();
+    }
 }

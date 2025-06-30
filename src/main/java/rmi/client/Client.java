@@ -1,9 +1,7 @@
 package rmi.client;
 
-import rmi.blackjack.Round;
 import rmi.interfaces.Session;
 
-import javax.swing.plaf.synth.SynthOptionPaneUI;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -50,32 +48,104 @@ public class Client {
             System.out.println("[SERVIDOR] 1. Iniciar nova rodada");
             System.out.println("[SERVIDOR] 2. Ver saldo");
             System.out.println("[SERVIDOR] 3. Ver histórico");
-            System.out.println("[SERVIDOR] 4. Sair");
+            System.out.println("[SERVIDOR] 4. Depositar");
+            System.out.println("[SERVIDOR] 5. Sacar");
+            System.out.println("[SERVIDOR] 6. Sair");
             int option = scanner.nextInt();
             switch (option){
-                case 1 -> {
-                    this.startRound();
-                }
-                case 2 -> {
-                    System.out.println("[SERVIDOR] Seu saldo: " + this.session.getBettorBalance());
-                }
-                case 3 -> {
-                    System.out.print("[SERVIDOR] Histórico:\n" + this.session.getHistory());
-                }
-                case 4 -> {
+                case 1 -> this.startRound();
+                case 2 -> System.out.println("[SERVIDOR] Seu saldo: R$" + this.session.getBettorBalance());
+                case 3 -> System.out.print("[SERVIDOR] Histórico:\n" + this.session.getHistory());
+
+                case 4 -> this.deposit();
+
+                case 5 -> this.withdraw();
+
+                case 6 -> {
                     return;
                 }
-                default -> {
-                    System.out.println("[SERVIDOR] Opção inválida.");
-                }
+                default -> System.out.println("[SERVIDOR] Opção inválida.");
+
             }
         }
 
     }
 
+    public boolean isCPFValid(String cpf) {
+        cpf = cpf.replaceAll("\\D", "");
+        if (cpf.length() != 11) {
+            return false;
+        }
+
+        if (cpf.matches("(\\d)\\1{10}")) {
+            return false;
+        }
+
+        int sum = 0;
+        for (int i = 0; i < 9; i++) {
+            int digit = Character.getNumericValue(cpf.charAt(i));
+            sum += digit * (10 - i);
+        }
+        int firstCheckDigit = 11 - (sum % 11);
+        if (firstCheckDigit >= 10) {
+            firstCheckDigit = 0;
+        }
+
+        if (firstCheckDigit != Character.getNumericValue(cpf.charAt(9))) {
+            return false;
+        }
+
+        sum = 0;
+        for (int i = 0; i < 10; i++) {
+            int digit = Character.getNumericValue(cpf.charAt(i));
+            sum += digit * (11 - i);
+        }
+        int secondCheckDigit = 11 - (sum % 11);
+        if (secondCheckDigit >= 10) {
+            secondCheckDigit = 0;
+        }
+
+        return secondCheckDigit == Character.getNumericValue(cpf.charAt(10));
+    }
+
+    public void deposit() throws RemoteException {
+        System.out.println("[SERVIDOR] Digite o valor a ser depositado: ");
+        int value = scanner.nextInt();
+        if (value < 0){
+            System.out.println("[SERVIDOR] Valor inválido! O mínimo é R$1,00. Cancelando operação...");
+            return;
+        }
+        this.session.deposit(value);
+        System.out.println("[SERVIDOR] R$" + value + " depositados com sucesso");
+    }
+
+    public void withdraw() throws RemoteException {
+        System.out.println("[SERVIDOR] Digite o valor a ser sacado: ");
+        int value = scanner.nextInt();
+        if (value < 0){
+            System.out.println("[SERVIDOR] Valor inválido! O mínimo é R$1,00. Cancelando operação...");
+            return;
+        }
+        System.out.println("[SERVIDOR] Digite sua chave pix (CPF), apenas números: ");
+        String cpf = scanner.nextLine();
+        if (!isCPFValid(cpf)){
+            System.out.println("[SERVIDOR] CPF inválido! Cancelando operação...");
+        }
+        this.session.withdraw(value);
+        System.out.println("[SERVIDOR] R$" + value + " sacados com sucesso");
+    }
+
     public void startRound() throws RemoteException {
         System.out.println("[SERVIDOR] Quantos R$ deseja apostar nessa rodada? ");
         int betAmount = scanner.nextInt();
+        if (betAmount < 1) {
+            System.out.println("[SERVIDOR] Valor de aposta inválido. O mínimo é R$1,00.");
+            return;
+        }
+        if (betAmount > this.session.getBettorBalance()) {
+            System.out.println("[SERVIDOR] Você não possui saldo suficiente para realizar essa aposta. Seu saldo é de: " + this.session.getBettorBalance());
+            return;
+        }
         this.session.startNewRound(betAmount);
         this.getBettorAction();
     }
