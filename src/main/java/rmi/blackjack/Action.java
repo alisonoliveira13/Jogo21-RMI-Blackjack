@@ -5,7 +5,7 @@ import java.io.Serializable;
 public enum Action implements Serializable {
     HIT("Pedir Carta (Hit)"),
     STAND("Parar (Stand)"),
-    DOUBLE_DOWN("Dobrar aposta (Double down)");
+    DOUBLE_DOWN("Dobrar aposta (Double down) | Obrigatoriamente receberá mais uma carta e apenas esta.");
 
     private String description;
 

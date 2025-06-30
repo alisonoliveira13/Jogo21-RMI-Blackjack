@@ -1,5 +1,6 @@
 package rmi.server;
 
+import rmi.interfaces.GameServer;
 import rmi.interfaces.Session;
 
 import java.rmi.registry.LocateRegistry;
@@ -11,9 +12,9 @@ public class Server {
     public static void main(String[] args) {
         try {
             // 1. Cria a instância do serviço remoto (a implementação do jogo)
-            SessionImpl gameService = new SessionImpl();
+            GameServerImpl gameServer = new GameServerImpl();
 
-            Session stub = (Session) UnicastRemoteObject.exportObject(gameService, 0);
+            GameServer stub = (GameServer) UnicastRemoteObject.exportObject(gameServer, 0);
 
             // 2. Cria o registro RMI na porta padrão (1099)
             Registry registry = LocateRegistry.createRegistry(1099);

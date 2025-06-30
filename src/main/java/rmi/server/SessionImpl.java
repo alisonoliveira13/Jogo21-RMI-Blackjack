@@ -3,13 +3,20 @@ package rmi.server;
 import rmi.blackjack.*;
 import rmi.interfaces.Session;
 
+import java.io.Serializable;
+import java.rmi.RemoteException;
 
-public class SessionImpl implements Session {
+
+public class SessionImpl implements Session, Serializable {
     private Dealer dealer;
     private Bettor bettor;
     private Deck deck;
     private History history;
     private Round currentRound;
+
+    public SessionImpl() throws RemoteException {
+        super();
+    }
 
     @Override
     public String connect(String bettorName, int bettorBalance){

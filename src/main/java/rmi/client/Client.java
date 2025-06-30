@@ -1,5 +1,6 @@
 package rmi.client;
 
+import rmi.interfaces.GameServer;
 import rmi.interfaces.Session;
 
 import java.rmi.NotBoundException;
@@ -18,7 +19,6 @@ public class Client {
     public Client() throws NotBoundException, RemoteException {
         this.welcomeMessage();
         this.startClient();
-        this.connectServer();
     }
     public void welcomeMessage(){
         System.out.println("Bem-vindo ao cliente do Jogo 21!");
@@ -34,12 +34,8 @@ public class Client {
 
         // 2. Busca (lookup) pelo serviço remoto no registry usando o nome "Jogo21".
         // O resultado é um "stub", um proxy que representa o objeto remoto.
-        this.session = (Session) registry.lookup("Jogo21");
-    }
-
-    public void connectServer() throws RemoteException {
-        String connectionResponse = this.session.connect(username, balance);
-        System.out.println("[SERVIDOR] " + connectionResponse);
+        GameServer gameServer = (GameServer) registry.lookup("Jogo21");
+        this.session = gameServer.createSession(this.username, this.balance);
     }
 
     public void getUserMenuOption() throws RemoteException {
@@ -122,6 +118,7 @@ public class Client {
     public void withdraw() throws RemoteException {
         System.out.println("[SERVIDOR] Digite o valor a ser sacado: ");
         int value = scanner.nextInt();
+        scanner.nextLine();
         if (value < 0){
             System.out.println("[SERVIDOR] Valor inválido! O mínimo é R$1,00. Cancelando operação...");
             return;
@@ -130,6 +127,7 @@ public class Client {
         String cpf = scanner.nextLine();
         if (!isCPFValid(cpf)){
             System.out.println("[SERVIDOR] CPF inválido! Cancelando operação...");
+            return;
         }
         this.session.withdraw(value);
         System.out.println("[SERVIDOR] R$" + value + " sacados com sucesso");
