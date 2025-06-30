@@ -19,12 +19,11 @@ public class SessionImpl implements Session, Serializable {
     }
 
     @Override
-    public String connect(String bettorName, int bettorBalance){
+    public void connect(String bettorName, int bettorBalance){
         this.dealer = new Dealer();
         this.bettor = new Bettor(bettorName, bettorBalance);
         this.deck = new Deck();
         this.history = new History();
-        return "Conectado com sucesso!";
     }
 
     @Override

@@ -3,7 +3,6 @@ package rmi.interfaces;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
-import rmi.blackjack.Bettor;
 import rmi.blackjack.Round;
 
 
@@ -11,7 +10,7 @@ import rmi.blackjack.Round;
 
 public interface Session extends Remote {
 
-    String connect(String bettorName, int bettorBalance) throws RemoteException;
+    void connect(String bettorName, int bettorBalance) throws RemoteException;
     void startNewRound(int betAmount) throws RemoteException;
     Round getCurrentRound() throws RemoteException;
     String getCurrentRoundGameState() throws RemoteException;
